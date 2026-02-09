@@ -1,0 +1,381 @@
+{% extends "layout.html" %}
+
+{% block title %}Settings - Hamburg Wheel Tracking{% endblock %}
+
+{% block content %}
+<div id="main" class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-primary">Settings</h1>
+    <div id="htmx-indicator" class="hidden">
+      <svg class="animate-spin h-5 w-5 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Report Templates Section -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+      <div>
+        <h2 class="text-xl font-semibold text-primary">Report Templates</h2>
+        <p class="text-sm text-gray-600 mt-1">Manage custom report templates for test outputs</p>
+      </div>
+      <button
+        hx-get="/settings/templates/new"
+        hx-target="#main"
+        hx-swap="innerHTML"
+        hx-indicator="#htmx-indicator"
+        class="bg-accent text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-accent-dark transition-colors duration-200 shadow-sm inline-flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New Template
+      </button>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Template Name</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Modified</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Standard Test Report</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">PDF</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2026-01-15</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <button
+                hx-get="/settings/templates/1/edit"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-primary hover:text-primary-dark font-medium mr-3">Edit</button>
+              <button
+                hx-get="/settings/templates/1/preview"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-accent hover:text-accent-dark font-medium">Preview</button>
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Detailed Analysis Report</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">PDF</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2026-01-10</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <button
+                hx-get="/settings/templates/2/edit"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-primary hover:text-primary-dark font-medium mr-3">Edit</button>
+              <button
+                hx-get="/settings/templates/2/preview"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-accent hover:text-accent-dark font-medium">Preview</button>
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">Data Export Template</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">Excel</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">2025-12-20</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm">
+              <button
+                hx-get="/settings/templates/3/edit"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-primary hover:text-primary-dark font-medium mr-3">Edit</button>
+              <button
+                hx-get="/settings/templates/3/preview"
+                hx-target="#main"
+                hx-swap="innerHTML"
+                hx-indicator="#htmx-indicator"
+                class="text-accent hover:text-accent-dark font-medium">Preview</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Reference Data Section -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-primary">Reference Data</h2>
+      <p class="text-sm text-gray-600 mt-1">Configure binder grades and file type parsing profiles</p>
+    </div>
+    <div class="p-6">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Binder Grades -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Binder Grades</h3>
+          <div class="border border-gray-200 rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grade</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Default Max Rut</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PG 58-22</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">12.5 mm</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/binder-grades/1/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PG 58-28</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">12.5 mm</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/binder-grades/2/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PG 64-22</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">12.5 mm</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/binder-grades/3/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PG 64-28</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">12.5 mm</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/binder-grades/4/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PG 70-22</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">12.5 mm</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/binder-grades/5/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button
+            hx-get="/settings/binder-grades/new"
+            hx-target="#main"
+            hx-swap="innerHTML"
+            hx-indicator="#htmx-indicator"
+            class="mt-4 bg-white text-primary px-4 py-2 rounded-lg text-sm font-medium border border-primary hover:bg-gray-50 transition-colors duration-200 inline-flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add Binder Grade
+          </button>
+        </div>
+
+        <!-- File Type Parsing Profiles -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">File Type Parsing Profiles</h3>
+          <div class="border border-gray-200 rounded-lg">
+            <table class="min-w-full divide-y divide-gray-200">
+              <thead class="bg-gray-50">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Column Map</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="bg-white divide-y divide-gray-200">
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Instratek</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">Pass, Depth, Ref</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/file-types/instratek/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Troxler</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">Cycles, Rut</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/file-types/troxler/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">PTI</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">Pass, Depth</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/file-types/pti/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-50">
+                  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">Custom</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">User-defined</td>
+                  <td class="px-4 py-3 whitespace-nowrap text-sm">
+                    <button
+                      hx-get="/settings/file-types/custom/edit"
+                      hx-target="#main"
+                      hx-swap="innerHTML"
+                      hx-indicator="#htmx-indicator"
+                      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <button
+            hx-get="/settings/file-types/new"
+            hx-target="#main"
+            hx-swap="innerHTML"
+            hx-indicator="#htmx-indicator"
+            class="mt-4 bg-white text-primary px-4 py-2 rounded-lg text-sm font-medium border border-primary hover:bg-gray-50 transition-colors duration-200 inline-flex items-center">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Add File Type
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System Settings Section -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-primary">System Settings</h2>
+      <p class="text-sm text-gray-600 mt-1">Analysis engine and data retention configuration</p>
+    </div>
+    <div class="p-6">
+      <div class="space-y-6">
+        <!-- Analysis Version -->
+        <div class="flex items-center justify-between py-4 border-b border-gray-200">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Analysis Engine Version</h3>
+            <p class="text-sm text-gray-600 mt-1">Current algorithm version for test analysis</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="px-3 py-1 inline-flex text-sm font-semibold rounded-lg bg-primary-light bg-opacity-10 text-primary">v2.3.1</span>
+            <button
+              hx-get="/settings/system/version"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-indicator="#htmx-indicator"
+              class="text-primary hover:text-primary-dark font-medium text-sm">View Details</button>
+          </div>
+        </div>
+
+        <!-- Data Retention -->
+        <div class="flex items-center justify-between py-4 border-b border-gray-200">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Data Retention Policy</h3>
+            <p class="text-sm text-gray-600 mt-1">Automatic cleanup of old test runs and artifacts</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-sm text-gray-700">Keep for <strong>365 days</strong></span>
+            <button
+              hx-get="/settings/system/retention"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-indicator="#htmx-indicator"
+              class="text-primary hover:text-primary-dark font-medium text-sm">Configure</button>
+          </div>
+        </div>
+
+        <!-- Storage Usage -->
+        <div class="flex items-center justify-between py-4 border-b border-gray-200">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Storage Usage</h3>
+            <p class="text-sm text-gray-600 mt-1">Current storage consumption for test data and artifacts</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-sm text-gray-700"><strong>48.2 GB</strong> of 500 GB used</span>
+            <button
+              hx-get="/settings/system/storage"
+              hx-target="#main"
+              hx-swap="innerHTML"
+              hx-indicator="#htmx-indicator"
+              class="text-primary hover:text-primary-dark font-medium text-sm">Details</button>
+          </div>
+        </div>
+
+        <!-- Database Maintenance -->
+        <div class="flex items-center justify-between py-4">
+          <div>
+            <h3 class="text-sm font-semibold text-gray-900">Database Maintenance</h3>
+            <p class="text-sm text-gray-600 mt-1">Optimize database performance and cleanup orphaned records</p>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span class="text-sm text-gray-500">Last run: 2026-01-20</span>
+            <button
+              hx-post="/settings/system/maintenance"
+              hx-target="#toast"
+              hx-swap="beforeend"
+              hx-indicator="#htmx-indicator"
+              class="bg-white text-primary px-4 py-2 rounded-lg text-sm font-medium border border-primary hover:bg-gray-50 transition-colors duration-200">
+              Run Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast notification area -->
+  <div id="toast" class="fixed top-4 right-4 z-50 space-y-2"></div>
+</div>
+{% endblock %}

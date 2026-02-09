@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+
+{% block title %}Dashboard - Hamburg Wheel Tracking{% endblock %}
+
+{% block content %}
+<div id="main" class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-primary">Dashboard</h1>
+    <div id="htmx-indicator" class="hidden">
+      <svg class="animate-spin h-5 w-5 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <!-- Total Runs -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Total Runs</p>
+          <p class="text-3xl font-bold text-primary mt-2">{{ total_runs|default:"—" }}</p>
+        </div>
+        <div class="bg-primary-light bg-opacity-10 rounded-full p-3">
+          <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pass Rate -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Pass Rate</p>
+          <p class="text-3xl font-bold text-green-600 mt-2">{{ pass_rate|default:"—" }}{% if pass_rate %}%{% endif %}</p>
+        </div>
+        <div class="bg-green-100 rounded-full p-3">
+          <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Avg Final Rut -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Avg Final Rut</p>
+          <p class="text-3xl font-bold text-accent mt-2">{{ avg_final_rut|default:"—" }}{% if avg_final_rut %}<span class="text-lg text-gray-500 ml-1">mm</span>{% endif %}</p>
+        </div>
+        <div class="bg-accent-light bg-opacity-20 rounded-full p-3">
+          <svg class="w-8 h-8 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Failures -->
+    <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm font-medium text-gray-600">Recent Failures</p>
+          <p class="text-3xl font-bold text-red-600 mt-2">{{ recent_failures|default:"—" }}</p>
+        </div>
+        <div class="bg-red-100 rounded-full p-3">
+          <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+    <h2 class="text-xl font-semibold text-primary mb-4">Quick Actions</h2>
+    <div class="flex flex-wrap gap-4">
+      <a href="/new-test" class="bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent-dark transition-colors duration-200 shadow-sm inline-flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        New Test Run
+      </a>
+      <a href="/runs" class="bg-white text-primary px-6 py-3 rounded-lg font-medium border-2 border-primary hover:bg-gray-50 transition-colors duration-200 inline-flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+        </svg>
+        View All Runs
+      </a>
+      <a href="/reports" class="bg-white text-primary px-6 py-3 rounded-lg font-medium border-2 border-primary hover:bg-gray-50 transition-colors duration-200 inline-flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Browse Reports
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent Runs -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+      <h2 class="text-xl font-semibold text-primary">Recent Runs</h2>
+    </div>
+    {% if recent_runs %}
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Run ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Binder Grade</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File Type</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Classification</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for run in recent_runs %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-primary">#HWT-{{ run.id }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ run.binder_grade }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ run.file_type|title }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                {% if run.status == 'complete' %}bg-green-100 text-green-800
+                {% elif run.status == 'processing' %}bg-yellow-100 text-yellow-800
+                {% elif run.status == 'failed' %}bg-red-100 text-red-800
+                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                {{ run.status|title }}
+              </span>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ run.created_at|date:"Y-m-d H:i" }}</td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              {% if run.results %}
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full
+                {% if run.results.rating_classification == 'Pass' %}bg-green-100 text-green-800
+                {% elif run.results.rating_classification == 'Fail' %}bg-red-100 text-red-800
+                {% else %}bg-gray-100 text-gray-600{% endif %}">
+                {{ run.results.rating_classification }}
+              </span>
+              {% else %}
+              <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-600">Pending</span>
+              {% endif %}
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+              <button hx-get="/runs/{{ run.id }}" hx-target="#main" hx-swap="innerHTML" hx-indicator="#htmx-indicator" class="text-primary hover:text-primary-dark font-medium mr-3">View</button>
+              {% if run.status == 'complete' %}
+              <button hx-get="/runs/{{ run.id }}/export/pdf" hx-target="#toast" hx-swap="beforeend" hx-indicator="#htmx-indicator" class="text-accent hover:text-accent-dark font-medium">Export PDF</button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <!-- Empty State -->
+    <div class="p-12 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No test runs yet</h3>
+      <p class="mt-1 text-sm text-gray-500">Get started by creating your first Hamburg Wheel Tracking test run.</p>
+      <div class="mt-6">
+        <a href="/new-test" class="bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent-dark transition-colors duration-200 shadow-sm inline-flex items-center">
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+          </svg>
+          Create First Test Run
+        </a>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Toast notification area -->
+  <div id="toast" class="fixed top-4 right-4 z-50 space-y-2"></div>
+</div>
+{% endblock %}

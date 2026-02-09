@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+
+{% block title %}Reports - Hamburg Wheel Tracking{% endblock %}
+
+{% block content %}
+<div id="main" class="space-y-6">
+  <!-- Header -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-primary">Reports & Artifacts</h1>
+    <div class="flex items-center space-x-4">
+      <div id="htmx-indicator" class="hidden">
+        <svg class="animate-spin h-5 w-5 text-accent" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+      </div>
+      <button
+        hx-get="/reports/generate"
+        hx-target="#main"
+        hx-swap="innerHTML"
+        hx-indicator="#htmx-indicator"
+        class="bg-accent text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-accent-dark transition-colors duration-200 shadow-sm inline-flex items-center">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+        </svg>
+        Generate Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter Tabs -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="border-b border-gray-200">
+      <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+        <button
+          hx-get="/reports?type=all"
+          hx-target="#artifact-list"
+          hx-swap="innerHTML"
+          hx-indicator="#htmx-indicator"
+          class="border-b-2 border-accent py-4 px-1 text-sm font-medium text-accent">
+          All Artifacts
+        </button>
+        <button
+          hx-get="/reports?type=pdf"
+          hx-target="#artifact-list"
+          hx-swap="innerHTML"
+          hx-indicator="#htmx-indicator"
+          class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+          PDFs
+        </button>
+        <button
+          hx-get="/reports?type=excel"
+          hx-target="#artifact-list"
+          hx-swap="innerHTML"
+          hx-indicator="#htmx-indicator"
+          class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+          Excel
+        </button>
+        <button
+          hx-get="/reports?type=plots"
+          hx-target="#artifact-list"
+          hx-swap="innerHTML"
+          hx-indicator="#htmx-indicator"
+          class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+          Plots
+        </button>
+        <button
+          hx-get="/reports?type=data"
+          hx-target="#artifact-list"
+          hx-swap="innerHTML"
+          hx-indicator="#htmx-indicator"
+          class="border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-gray-300">
+          Data Exports
+        </button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Artifact List -->
+  <div id="artifact-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% if artifacts %}
+      {% for artifact in artifacts %}
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center">
+            <div class="rounded-lg p-3
+              {% if artifact.type == 'pdf' %}bg-red-100
+              {% elif artifact.type == 'excel' %}bg-green-100
+              {% elif artifact.type == 'plot' %}bg-blue-100
+              {% else %}bg-gray-100{% endif %}">
+              <svg class="w-8 h-8
+                {% if artifact.type == 'pdf' %}text-red-600
+                {% elif artifact.type == 'excel' %}text-green-600
+                {% elif artifact.type == 'plot' %}text-blue-600
+                {% else %}text-gray-600{% endif %}"
+                fill="currentColor" viewBox="0 0 20 20">
+                {% if artifact.type == 'plot' %}
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                {% else %}
+                <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
+                {% endif %}
+              </svg>
+            </div>
+          </div>
+          <span class="px-2 py-1 text-xs font-semibold rounded-full
+            {% if artifact.type == 'pdf' %}bg-gray-100 text-gray-600
+            {% elif artifact.type == 'excel' %}bg-green-100 text-green-600
+            {% elif artifact.type == 'plot' %}bg-blue-100 text-blue-600
+            {% else %}bg-gray-100 text-gray-600{% endif %}">
+            {{ artifact.type|upper }}
+          </span>
+        </div>
+        <h3 class="text-sm font-semibold text-gray-900 mb-1">{{ artifact.name|default:"Artifact" }}</h3>
+        <p class="text-xs text-gray-500 mb-1">Run #HWT-{{ artifact.test_results.test_run.id }}</p>
+        <p class="text-xs text-gray-500 mb-3">Generated: {{ artifact.created_at|date:"Y-m-d H:i"|default:"—" }}</p>
+        <p class="text-xs text-gray-400 mb-4">{{ artifact.size|default:"—" }}</p>
+        <div class="flex space-x-2">
+          <button
+            hx-get="/artifacts/{{ artifact.id }}/view"
+            hx-target="#main"
+            hx-swap="innerHTML"
+            hx-indicator="#htmx-indicator"
+            class="flex-1 bg-primary text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-primary-dark transition-colors duration-200">
+            View
+          </button>
+          <button
+            hx-get="/artifacts/{{ artifact.id }}/download"
+            hx-target="#toast"
+            hx-swap="beforeend"
+            hx-indicator="#htmx-indicator"
+            class="flex-1 bg-white text-primary px-4 py-2 rounded-lg text-xs font-medium border border-primary hover:bg-gray-50 transition-colors duration-200">
+            Download
+          </button>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="col-span-full p-12 text-center bg-white rounded-lg shadow-sm border border-gray-200">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      <h3 class="mt-2 text-lg font-medium text-gray-900">No artifacts found</h3>
+      <p class="mt-1 text-sm text-gray-500">Complete some test runs to generate reports and artifacts.</p>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Toast notification area -->
+  <div id="toast" class="fixed top-4 right-4 z-50 space-y-2"></div>
+</div>
+{% endblock %}
