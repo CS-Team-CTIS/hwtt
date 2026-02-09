@@ -1,3 +1,6 @@
+import os
+
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
@@ -41,7 +44,11 @@ class RatingClassificationMapping(models.IntegerChoices):
 #     def __str__(self):
 #         return f"{self.code} - {self.description}"
 # ==============================================================================
-
+def validate_file(value):
+    ext = os.path.splitext(value.name)[1]
+    valid_extensions = ['.csv']
+    if ext.lower() not in valid_extensions:
+        raise ValidationError('Only CSV files are allowed.')
 
 class TestRun(models.Model):
     """
@@ -57,7 +64,7 @@ class TestRun(models.Model):
         help_text="Maximum allowed rut depth in mm"
     )
     notes = models.TextField(null=True, blank=True, help_text="Optional notes about the test run")
-    file_path = models.CharField(max_length=500, help_text="Path to the test data file")
+    file = models.FileField(help_text="data file",upload_to='uploads/%Y/%m/%d/',validators=[validate_file])
     status = models.IntegerField(choices=StatusMapping.choices, help_text="Test run status")
     errors = models.TextField(null=True, blank=True, help_text="Error messages if any")
     analysis_version = models.IntegerField(help_text="Version of the analysis algorithm used")

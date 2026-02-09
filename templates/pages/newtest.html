@@ -19,59 +19,90 @@
     <!-- Main Form -->
     <div class="lg:col-span-2">
       <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-        <form id="test-run-form">
+        {% if form.non_field_errors %}
+        <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+          {% for error in form.non_field_errors %}
+          <p class="text-sm text-red-700">{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <form id="test-run-form" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <!-- Specimen -->
+          <div class="mb-6">
+            <label for="specimen" class="block text-sm font-medium text-gray-700 mb-2">Specimen Identifier</label>
+            <input type="text" id="specimen" name="specimen" value="{{ form.specimen.value|default_if_none:'' }}" placeholder="e.g. SP-2026-001" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.specimen.errors %} border-red-500{% endif %}" />
+            {% for error in form.specimen.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
+          </div>
+
           <!-- Binder Grade -->
           <div class="mb-6">
             <label for="binder-grade" class="block text-sm font-medium text-gray-700 mb-2">Binder Grade</label>
-            <select id="binder-grade" name="binder_grade" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary">
+            <select id="binder-grade" name="binder_grade" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.binder_grade.errors %} border-red-500{% endif %}">
               <option value="">Select binder grade...</option>
-              <option value="PG 58-22">PG 58-22</option>
-              <option value="PG 58-28">PG 58-28</option>
-              <option value="PG 64-22">PG 64-22</option>
-              <option value="PG 64-28">PG 64-28</option>
-              <option value="PG 70-22">PG 70-22</option>
-              <option value="PG 70-28">PG 70-28</option>
-              <option value="PG 76-22">PG 76-22</option>
-              <option value="PG 76-28">PG 76-28</option>
+              {% with val=form.binder_grade.value|default_if_none:'' %}
+              <option value="PG 58-22" {% if val == "PG 58-22" %}selected{% endif %}>PG 58-22</option>
+              <option value="PG 58-28" {% if val == "PG 58-28" %}selected{% endif %}>PG 58-28</option>
+              <option value="PG 64-22" {% if val == "PG 64-22" %}selected{% endif %}>PG 64-22</option>
+              <option value="PG 64-28" {% if val == "PG 64-28" %}selected{% endif %}>PG 64-28</option>
+              <option value="PG 70-22" {% if val == "PG 70-22" %}selected{% endif %}>PG 70-22</option>
+              <option value="PG 70-28" {% if val == "PG 70-28" %}selected{% endif %}>PG 70-28</option>
+              <option value="PG 76-22" {% if val == "PG 76-22" %}selected{% endif %}>PG 76-22</option>
+              <option value="PG 76-28" {% if val == "PG 76-28" %}selected{% endif %}>PG 76-28</option>
+              {% endwith %}
             </select>
+            {% for error in form.binder_grade.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
           </div>
 
           <!-- File Type -->
           <div class="mb-6">
             <label class="block text-sm font-medium text-gray-700 mb-2">File Type</label>
+            {% with ft=form.file_type.value|default_if_none:'' %}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="instratek" class="sr-only peer" />
+                <input type="radio" name="file_type" value="instratek" {% if ft == "instratek" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Instratek</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="troxler" class="sr-only peer" />
+                <input type="radio" name="file_type" value="troxler" {% if ft == "troxler" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Troxler</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="pti" class="sr-only peer" />
+                <input type="radio" name="file_type" value="pti" {% if ft == "pti" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">PTI</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="custom" class="sr-only peer" />
+                <input type="radio" name="file_type" value="custom" {% if ft == "custom" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Custom</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
             </div>
+            {% endwith %}
+            {% for error in form.file_type.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
           </div>
 
           <!-- Max Allowable Rut Depth -->
           <div class="mb-6">
-            <label for="max-rut-depth" class="block text-sm font-medium text-gray-700 mb-2">Maximum Allowable Rut Depth</label>
+            <label for="allowed-rut-depth" class="block text-sm font-medium text-gray-700 mb-2">Maximum Allowable Rut Depth</label>
             <div class="relative">
-              <input type="number" id="max-rut-depth" name="max_rut_depth" step="0.1" min="0" placeholder="12.5" class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary" />
+              <input type="number" id="allowed-rut-depth" name="allowed_rut_depth" step="0.1" min="0" placeholder="12.5" value="{{ form.allowed_rut_depth.value|default_if_none:'' }}" class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.allowed_rut_depth.errors %} border-red-500{% endif %}" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                 <span class="text-gray-500 text-sm font-medium">mm</span>
               </div>
             </div>
+            {% for error in form.allowed_rut_depth.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
             <p class="mt-1 text-sm text-gray-500">Typical values: 10-15 mm</p>
           </div>
 
@@ -85,9 +116,12 @@
               <p class="mt-2 text-sm text-gray-600">
                 <span class="font-semibold text-primary">Click to upload</span> or drag and drop
               </p>
-              <p class="mt-1 text-xs text-gray-500">CSV, TXT, or Excel files up to 10MB</p>
-              <input type="file" name="data_file" class="hidden" accept=".csv,.txt,.xls,.xlsx" />
+              <p class="mt-1 text-xs text-gray-500">CSV files up to 10MB</p>
+              <input type="file" name="file" id="file-input" class="hidden" accept=".csv" />
             </div>
+            {% for error in form.file.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
             <div class="mt-2 hidden" id="file-preview">
               <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
                 <div class="flex items-center space-x-3">
@@ -111,17 +145,16 @@
           <!-- Notes -->
           <div class="mb-6">
             <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Notes (Optional)</label>
-            <textarea id="notes" name="notes" rows="4" placeholder="Add any relevant notes about this test run..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none"></textarea>
+            <textarea id="notes" name="notes" rows="3" placeholder="Add any relevant notes about this test run..." class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary resize-none">{{ form.notes.value|default_if_none:'' }}</textarea>
+            {% for error in form.notes.errors %}
+            <p class="mt-1 text-sm text-red-600">{{ error }}</p>
+            {% endfor %}
           </div>
 
           <!-- Action Buttons -->
           <div class="flex flex-col sm:flex-row gap-3">
             <button
-              type="button"
-              hx-post="new-test/"
-              hx-target="#main"
-              hx-swap="innerHTML"
-              hx-indicator="#htmx-indicatdior"
+              type="submit"
               class="flex-1 bg-accent text-white px-6 py-3 rounded-lg font-medium hover:bg-accent-dark transition-colors duration-200 shadow-sm inline-flex items-center justify-center">
               <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
@@ -182,4 +215,30 @@
   <!-- Toast notification area -->
   <div id="toast" class="fixed top-4 right-4 z-50 space-y-2"></div>
 </div>
+
+<script>
+  // Dropzone click opens file picker
+  const dropzone = document.getElementById('dropzone');
+  const fileInput = document.getElementById('file-input');
+  const filePreview = document.getElementById('file-preview');
+  const fileName = document.getElementById('file-name');
+  const fileSize = document.getElementById('file-size');
+
+  dropzone?.addEventListener('click', () => fileInput?.click());
+
+  fileInput?.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file) {
+      fileName.textContent = file.name;
+      fileSize.textContent = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+      filePreview?.classList.remove('hidden');
+    }
+  });
+
+  // Remove file button
+  filePreview?.querySelector('button')?.addEventListener('click', () => {
+    fileInput.value = '';
+    filePreview.classList.add('hidden');
+  });
+</script>
 {% endblock %}
