@@ -41,17 +41,18 @@
           <!-- Binder Grade -->
           <div class="mb-6">
             <label for="binder-grade" class="block text-sm font-medium text-gray-700 mb-2">Binder Grade</label>
-            <select id="binder-grade" name="binder_grade" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.binder_grade.errors %} border-red-500{% endif %}">
+            <select id="binder-grade" name="binder_grade"
+                    hx-get="/binder-grade-max-rut/"
+                    hx-trigger="change"
+                    hx-target="#allowed-rut-depth"
+                    hx-swap="outerHTML"
+                    hx-include="this"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.binder_grade.errors %} border-red-500{% endif %}">
               <option value="">Select binder grade...</option>
               {% with val=form.binder_grade.value|default_if_none:'' %}
-              <option value="PG 58-22" {% if val == "PG 58-22" %}selected{% endif %}>PG 58-22</option>
-              <option value="PG 58-28" {% if val == "PG 58-28" %}selected{% endif %}>PG 58-28</option>
-              <option value="PG 64-22" {% if val == "PG 64-22" %}selected{% endif %}>PG 64-22</option>
-              <option value="PG 64-28" {% if val == "PG 64-28" %}selected{% endif %}>PG 64-28</option>
-              <option value="PG 70-22" {% if val == "PG 70-22" %}selected{% endif %}>PG 70-22</option>
-              <option value="PG 70-28" {% if val == "PG 70-28" %}selected{% endif %}>PG 70-28</option>
-              <option value="PG 76-22" {% if val == "PG 76-22" %}selected{% endif %}>PG 76-22</option>
-              <option value="PG 76-28" {% if val == "PG 76-28" %}selected{% endif %}>PG 76-28</option>
+              {% for grade in form.binder_grade.field.queryset %}
+              <option value="{{ grade.pk }}" {% if val|stringformat:"s" == grade.pk|stringformat:"s" %}selected{% endif %}>{{ grade.name }}</option>
+              {% endfor %}
               {% endwith %}
             </select>
             {% for error in form.binder_grade.errors %}
@@ -65,22 +66,22 @@
             {% with ft=form.file_type.value|default_if_none:'' %}
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="instratek" {% if ft == "instratek" %}checked{% endif %} class="sr-only peer" />
+                <input type="radio" name="file_type" value="1" {% if ft == "1" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Instratek</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="troxler" {% if ft == "troxler" %}checked{% endif %} class="sr-only peer" />
+                <input type="radio" name="file_type" value="2" {% if ft == "2" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Troxler</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="pti" {% if ft == "pti" %}checked{% endif %} class="sr-only peer" />
+                <input type="radio" name="file_type" value="3" {% if ft == "3" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">PTI</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
               <label class="relative flex items-center justify-center px-4 py-3 bg-white border-2 border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-colors duration-200">
-                <input type="radio" name="file_type" value="custom" {% if ft == "custom" %}checked{% endif %} class="sr-only peer" />
+                <input type="radio" name="file_type" value="4" {% if ft == "4" %}checked{% endif %} class="sr-only peer" />
                 <span class="text-sm font-medium text-gray-700 peer-checked:text-primary">Custom</span>
                 <div class="absolute inset-0 border-2 border-primary rounded-lg opacity-0 peer-checked:opacity-100"></div>
               </label>
@@ -95,7 +96,7 @@
           <div class="mb-6">
             <label for="allowed-rut-depth" class="block text-sm font-medium text-gray-700 mb-2">Maximum Allowable Rut Depth</label>
             <div class="relative">
-              <input type="number" id="allowed-rut-depth" name="allowed_rut_depth" step="0.1" min="0" placeholder="12.5" value="{{ form.allowed_rut_depth.value|default_if_none:'' }}" class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.allowed_rut_depth.errors %} border-red-500{% endif %}" />
+              <input type="number" id="allowed-rut-depth" name="allowed_rut_depth" step="0.1" min="0" placeholder="XX.X mm" value="{{ form.allowed_rut_depth.value|default_if_none:'' }}" class="w-full px-4 py-2 pr-16 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary{% if form.allowed_rut_depth.errors %} border-red-500{% endif %}" />
               <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
                 <span class="text-gray-500 text-sm font-medium">mm</span>
               </div>
@@ -117,14 +118,14 @@
                 <span class="font-semibold text-primary">Click to upload</span> or drag and drop
               </p>
               <p class="mt-1 text-xs text-gray-500">CSV files up to 10MB</p>
-              <input type="file" name="file" id="file-input" class="hidden" accept=".csv" />
+              <input type="file" name="file" id="file-input" hx-post="/validate-file/" hx-trigger="change" hx-target="#parse-preview" hx-swap="innerHTML" hx-encoding="multipart/form-data" class="hidden"  />
             </div>
             {% for error in form.file.errors %}
             <p class="mt-1 text-sm text-red-600">{{ error }}</p>
             {% endfor %}
             <div class="mt-2 hidden" id="file-preview">
               <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
-                <div class="flex items-center space-x-3">
+                <div class="flex items-center space-x-3">xs
                   <svg class="h-8 w-8 text-accent" fill="currentColor" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd" />
                   </svg>
@@ -180,7 +181,7 @@
     <!-- Side Panels -->
     <div class="lg:col-span-1 space-y-6">
       <!-- Parse Preview -->
-      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200 " id="parse-preview" hx-swap="innerHTML" >
         <h3 class="text-lg font-semibold text-primary mb-4 flex items-center">
           <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -191,7 +192,7 @@
         <div class="space-y-3 text-sm">
           <div class="flex justify-between py-2 border-b border-gray-200">
             <span class="text-gray-600">Detected Columns:</span>
-            <span class="font-medium text-gray-900">3</span>
+            <span class="font-medium text-gray-900"> - </span>
           </div>
           <div class="flex justify-between py-2 border-b border-gray-200">
             <span class="text-gray-600">Data Rows:</span>

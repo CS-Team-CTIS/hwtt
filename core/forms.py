@@ -1,6 +1,6 @@
 from django import forms
 
-from core.models import TestRun
+from core.models import TestRun, BinderGrade
 
 
 class TestRunForm(forms.ModelForm):
@@ -18,3 +18,9 @@ class TestRunForm(forms.ModelForm):
             'file': forms.ClearableFileInput(attrs={'accept': '.csv'}),
             'notes': forms.Textarea(attrs={'rows': 3}),
         }
+
+
+class BinderGradeForm(forms.ModelForm):
+    class Meta:
+        model = BinderGrade
+        fields = ['name', 'max_rut', 'passes_to_rut']

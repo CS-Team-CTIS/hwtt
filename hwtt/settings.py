@@ -87,7 +87,13 @@ STATICFILES_DIRS = [BASE_DIR / "hwtt" / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+LOGIN_REDIRECT_URL = "/home"
+LOGOUT_REDIRECT_URL = "/login"
+LOGIN_URL = "/login"
 
+
+# Custom setting -> Change whenever the analysis changes (eg. New formula, library etc..)
+ANALYSIS_VERSION = 1
 
 
 # Password validation

@@ -3,6 +3,11 @@
 {% block title %}Test Results - Hamburg Wheel Tracking{% endblock %}
 
 {% block content %}
+
+{#    <div id="chart"></div>#}
+{#<script>#}
+{#  Plotly.newPlot('chart', {{ passes_vs_rut|safe }});#}
+{#</script>#}
 <div id="main" class="space-y-6">
   <!-- Header -->
   <div class="flex justify-between items-center">
@@ -32,33 +37,35 @@
     </div>
   </div>
 
+<!-- access it like this -->
+
   <!-- Test Information Card -->
   <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
     <h2 class="text-xl font-semibold text-primary mb-4">Test Information</h2>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <div>
         <p class="text-sm font-medium text-gray-500">Specimen ID</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ specimen|default:"—" }}</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.specimen|default:"—" }}</p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">Binder Grade</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ binder_grade|default:"—" }}</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.binder_grade|default:"—" }}</p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">File Type</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ file_type|default:"—" }}</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.get_file_type_display |default:"—" }}</p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">Test Date</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ created_at|default:"—" }}</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.created_at|default:"—" }}</p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">Max Allowable Rut</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ allowed_rut_depth|default:"—" }} mm</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.allowed_rut_depth|default:"—" }} mm</p>
       </div>
       <div>
-        <p class="text-sm font-medium text-gray-500">Test Duration</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_duration|default:"—" }}</p>
+        <p class="text-sm font-medium text-gray-500">File Name</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.filename |default:"—" }}</p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">Status</p>
@@ -68,19 +75,19 @@
             {% elif status == 'processing' %}bg-yellow-100 text-yellow-800
             {% elif status == 'failed' %}bg-red-100 text-red-800
             {% else %}bg-gray-100 text-gray-600{% endif %}">
-            {{ status|default:"—"|title }}
+            {{ test_run.get_status_display |default:"—"|title }}
           </span>
         </p>
       </div>
       <div>
         <p class="text-sm font-medium text-gray-500">Analysis Version</p>
-        <p class="text-base font-semibold text-gray-900 mt-1">{{ analysis_version|default:"—" }}</p>
+        <p class="text-base font-semibold text-gray-900 mt-1">{{ test_run.analysis_version|default:"—" }}</p>
       </div>
     </div>
     {% if notes %}
     <div class="mt-4 pt-4 border-t border-gray-200">
       <p class="text-sm font-medium text-gray-500 mb-1">Notes</p>
-      <p class="text-sm text-gray-700">{{ notes }}</p>
+      <p class="text-sm text-gray-700">{{ test_run.notes }}</p>
     </div>
     {% endif %}
   </div>
@@ -117,27 +124,35 @@
       <!-- Rut Depth at Key Cycles -->
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Rut Depth at 5,000 Passes</p>
-        <p class="text-3xl font-bold text-primary">{{ rut_depth_5000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
+        <p class="text-3xl font-bold text-primary">{{ test_results.rut_depth_5000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Rut Depth at 10,000 Passes</p>
-        <p class="text-3xl font-bold text-primary">{{ rut_depth_10000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
+        <p class="text-3xl font-bold text-primary">{{ test_results.rut_depth_10000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Rut Depth at 15,000 Passes</p>
-        <p class="text-3xl font-bold text-primary">{{ rut_depth_15000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
+        <p class="text-3xl font-bold text-primary">{{ test_results.rut_depth_15000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Rut Depth at 20,000 Passes</p>
-        <p class="text-3xl font-bold text-primary">{{ rut_depth_20000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
+        <p class="text-3xl font-bold text-primary">{{ test_results.rut_depth_20000|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Final Rut Depth</p>
-        <p class="text-3xl font-bold text-accent">{{ rut_depth_final|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
+        <p class="text-3xl font-bold text-gray-900">{{ test_results.rut_depth_final|default:"—" }} <span class="text-lg text-gray-500">mm</span></p>
       </div>
       <div class="bg-gray-50 rounded-lg p-4">
         <p class="text-sm font-medium text-gray-600 mb-3">Total Passes</p>
-        <p class="text-3xl font-bold text-gray-900">{{ passes_total|default:"—" }}</p>
+        <p class="text-3xl font-bold text-gray-900">{{ test_results.passes_total|default:"—" }}</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm font-medium text-gray-600 mb-3">SIP</p>
+        <p class="text-3xl font-bold text-accent">{{ test_results.inflection_pass|default:"—" }}</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-4">
+        <p class="text-sm font-medium text-gray-600 mb-3">NRRI</p>
+        <p class="text-3xl font-bold text-accent ">{{ test_results.inflection_pass|default:"—" }}</p>
       </div>
     </div>
   </div>
@@ -195,14 +210,19 @@
 
   <!-- Rut Depth Chart Placeholder -->
   <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-    <h2 class="text-xl font-semibold text-primary mb-4">Rut Depth vs. Number of Passes</h2>
-    <div id="chart-container" class="bg-gray-50 rounded-lg p-12 text-center">
-      <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
-      </svg>
-      <p class="text-gray-600 font-medium">Chart will be rendered here</p>
-      <p class="text-sm text-gray-500 mt-1">Integrate with Chart.js or Plotly for visualization</p>
-    </div>
+        <div id="chart-raw"></div>
+        <script>
+          var fig1 = {{ passes_vs_rut|safe }};
+          Plotly.newPlot('chart-raw', fig1.data, fig1.layout);
+        </script>
+  </div>
+
+  <div class="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+        <div id="chart-denoised"></div>
+        <script>
+          var fig2 = {{ passes_vs_rut_denoise|safe }};
+          Plotly.newPlot('chart-denoised', fig2.data, fig2.layout);
+        </script>
   </div>
 
   <!-- Measurements Table -->

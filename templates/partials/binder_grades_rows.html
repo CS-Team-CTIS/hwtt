@@ -1,0 +1,20 @@
+{% for grade in binder_grades %}
+<tr class="hover:bg-gray-50">
+  <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ grade.name }}</td>
+  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{% if grade.max_rut %}{{ grade.max_rut }} mm{% else %}—{% endif %}</td>
+  <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-600">{% if grade.passes_to_rut %}{{ grade.passes_to_rut }}{% else %}—{% endif %}</td>
+  <td class="px-4 py-3 whitespace-nowrap text-sm">
+    <button
+      hx-get="/settings/binder-grades/{{ grade.pk }}/edit/"
+      hx-target="#binder-grade-form"
+      hx-swap="innerHTML"
+      hx-indicator="#htmx-indicator"
+      class="text-primary hover:text-primary-dark font-medium">Edit</button>
+  </td>
+</tr>
+{% empty %}
+<tr>
+  <td colspan="4" class="px-4 py-4 text-sm text-gray-500 text-center">No binder grades defined yet.</td>
+</tr>
+{% endfor %}
+<div id="binder-grade-form" hx-swap-oob="true"></div>

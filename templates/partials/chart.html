@@ -1,0 +1,5 @@
+<div id="chart"></div>
+<script>
+  Plotly.purge('chart');
+  Plotly.newPlot('chart', {{ chart_json|safe }});
+</script>

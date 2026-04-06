@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}SaaS Platform{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/tailwind.css' %}">
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.plot.ly/plotly-3.3.0.min.js" charset="utf-8"></script>
   </head>
   <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Navigation Bar -->
@@ -15,15 +17,16 @@
           <!-- Logo/Brand -->
           <div class="flex-shrink-0 flex items-center">
             <a href="/" class="text-2xl font-bold text-primary">
-              <span>HW</span><span class="text-accent">TT</span>
-            </a>
+              <span>HW</span><span class="text-accent">TT   </span>
+                 &nbsp;
+             </a>
               Welcome
               {{ user.username }}
           </div>
 
           <!-- Navigation Links -->
           <div class="hidden md:flex md:items-center md:space-x-8">
-            <a href="/" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
+            <a href="/home" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">
               Home
             </a>
             <a href="/new-test" class="text-gray-700 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200">

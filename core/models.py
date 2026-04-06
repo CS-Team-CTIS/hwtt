@@ -6,49 +6,42 @@ from django.contrib.auth.models import User
 from django.core.validators import MinValueValidator
 
 
-# ==============================================================================
-# BLUEPRINT: Future Mapping Models for Enum Values
-# ==============================================================================
-# These models can be implemented later to provide extensible enum mappings
-# stored in the database instead of hardcoded choices.
-#
-# class FileTypeMapping(models.Model):
-#     """Mapping for file_type enum values (e.g., CSV, XLSX, JSON)"""
-#     code = models.CharField(max_length=50, unique=True)
-#     description = models.CharField(max_length=255)
-#     is_active = models.BooleanField(default=True)
-#
-#     def __str__(self):
-#         return f"{self.code} - {self.description}"
-#
-class StatusMapping(models.IntegerChoices):
-    """Mapping for test_run status enum values (e.g., PENDING, RUNNING, COMPLETED, FAILED)"""
+class TestRunStatus(models.IntegerChoices):
     PENDING = 1, 'PENDING'
     RUNNING = 2, 'RUNNING'
     COMPLETED = 3, 'COMPLETED'
     FAILED = 4, 'FAILED'
 
-class RatingClassificationMapping(models.IntegerChoices):
-    """Mapping for rating_classification enum values (e.g., EXCELLENT, GOOD, FAIR, POOR)"""
+
+class RatingClassification(models.IntegerChoices):
     EXCELLENT = 1, 'EXCELLENT'
     GOOD = 2, 'GOOD'
     FAIR = 3, 'FAIR'
     POOR = 4, 'POOR'
 
-# class ArtifactTypeMapping(models.Model):
-#     """Mapping for test_artifacts type enum values (e.g., IMAGE, VIDEO, REPORT, LOG)"""
-#     code = models.CharField(max_length=50, unique=True)
-#     description = models.CharField(max_length=255)
-#     is_active = models.BooleanField(default=True)
-#
-#     def __str__(self):
-#         return f"{self.code} - {self.description}"
-# ==============================================================================
+
+class TestFileType(models.IntegerChoices):
+    INSTROTEK = 1, 'INSTROTEK'
+    TROXLER = 2, 'TROXLER'
+    PTI = 3, 'PTI'
+    CUSTOM = 4, 'CUSTOM'
+
+
 def validate_file(value):
     ext = os.path.splitext(value.name)[1]
-    valid_extensions = ['.csv']
+    valid_extensions = ['.csv', '.xlsx', '.txt']
     if ext.lower() not in valid_extensions:
-        raise ValidationError('Only CSV files are allowed.')
+        raise ValidationError('Only .csv,.xlsx,.txt files are allowed.')
+
+
+class BinderGrade(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+    max_rut = models.FloatField(null=True, blank=True, help_text="Default maximum rut depth (mm)")
+    passes_to_rut = models.PositiveIntegerField(null=True, blank=True, help_text="Default number of passes to rut failure")
+
+    def __str__(self):
+        return self.name
+
 
 class TestRun(models.Model):
     """
@@ -57,19 +50,18 @@ class TestRun(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='test_runs')
     specimen = models.CharField(max_length=255, help_text="Test specimen identifier")
-    binder_grade = models.CharField(max_length=100, help_text="Binder grade specification")
-    file_type = models.CharField(max_length=50, help_text="Type of input file (enum placeholder)")
+    binder_grade = models.ForeignKey(BinderGrade, on_delete=models.PROTECT)
+    file_type = models.IntegerField(choices=TestFileType.choices, help_text="Type of input file")
     allowed_rut_depth = models.FloatField(
         validators=[MinValueValidator(0.0)],
         help_text="Maximum allowed rut depth in mm"
     )
     notes = models.TextField(null=True, blank=True, help_text="Optional notes about the test run")
-    file = models.FileField(help_text="data file",upload_to='uploads/%Y/%m/%d/',validators=[validate_file])
-    status = models.IntegerField(choices=StatusMapping.choices, help_text="Test run status")
+    file = models.FileField(help_text="Data file", upload_to='uploads/%Y/%m/%d/', validators=[validate_file])
+    status = models.IntegerField(choices=TestRunStatus.choices, help_text="Test run status")
     errors = models.TextField(null=True, blank=True, help_text="Error messages if any")
     analysis_version = models.IntegerField(help_text="Version of the analysis algorithm used")
 
-    # Timestamps
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -82,63 +74,56 @@ class TestRun(models.Model):
             models.Index(fields=['status']),
         ]
 
+    @property
+    def filename(self):
+        from pathlib import Path
+        return Path(self.file.name).name
+
     def __str__(self):
         return f"{self.specimen} - {self.user.username} - {self.created_at.strftime('%Y-%m-%d %H:%M')}"
+
+    @property
+    def result(self):
+        """Safe accessor for the related TestResults (returns None if not yet created)."""
+        try:
+            return self.results
+        except TestResults.DoesNotExist:
+            return None
 
 
 class TestResults(models.Model):
     """
-    Stores aggregated results for a test run.
-    One-to-one relationship with TestRun (deleted when TestRun is deleted).
+    Stores aggregated results for a test run. One result per run.
     """
-    test_run = models.ForeignKey(TestRun, on_delete=models.CASCADE, related_name='results')
+    test_run = models.OneToOneField(TestRun, on_delete=models.CASCADE, related_name='results')
+
+    passes_vs_rut = models.TextField()
+
+    passes_vs_rut_denoise = models.TextField()
+
     passes_total = models.BigIntegerField(
         validators=[MinValueValidator(0)],
-        help_text="Total number of passes in the test"
+        help_text="Total number of passes in the test",
+        null=True
     )
 
-    # Rut depth measurements at different pass counts
-    rut_depth_5000 = models.FloatField(
-        validators=[MinValueValidator(0.0)],
-        help_text="Rut depth at 5000 passes (mm)"
-    )
-    rut_depth_10000 = models.FloatField(
-        validators=[MinValueValidator(0.0)],
-        help_text="Rut depth at 10000 passes (mm)"
-    )
-    rut_depth_15000 = models.FloatField(
-        validators=[MinValueValidator(0.0)],
-        help_text="Rut depth at 15000 passes (mm)"
-    )
-    rut_depth_20000 = models.FloatField(
-        validators=[MinValueValidator(0.0)],
-        help_text="Rut depth at 20000 passes (mm)"
-    )
-    rut_depth_final = models.FloatField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0.0)],
-        help_text="Final rut depth measurement (mm)"
-    )
+    rut_depth_5000 = models.FloatField(validators=[MinValueValidator(0.0)], help_text="Rut depth at 5000 passes (mm)", null=True)
+    rut_depth_10000 = models.FloatField(validators=[MinValueValidator(0.0)], help_text="Rut depth at 10000 passes (mm)", null=True)
+    rut_depth_15000 = models.FloatField(validators=[MinValueValidator(0.0)], help_text="Rut depth at 15000 passes (mm)", null=True)
+    rut_depth_20000 = models.FloatField(validators=[MinValueValidator(0.0)], help_text="Rut depth at 20000 passes (mm)", null=True)
+    rut_depth_final = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0.0)], help_text="Final rut depth measurement (mm)")
 
-    passes_to_failure = models.FloatField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0.0)],
-        help_text="Number of passes until failure occurred"
-    )
-    inflection_pass = models.BigIntegerField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0)],
-        help_text="Pass number where inflection point occurred"
-    )
+    passes_to_failure = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0.0)], help_text="Number of passes until failure occurred")
+    inflection_pass = models.BigIntegerField(null=True, blank=True, validators=[MinValueValidator(0)], help_text="Pass number where inflection point occurred")
 
-    test_duration = models.DurationField(help_text="Total duration of the test")
-    rating = models.FloatField(help_text="Numerical rating of the test results")
-    rating_classification = models.CharField(
-        choices=RatingClassificationMapping.choices,
-        help_text="Classification of the rating (enum placeholder)"
+
+    test_duration = models.DurationField(help_text="Total duration of the test", null=True)
+    rating = models.FloatField(help_text="Numerical rating of the test results", null=True)
+    rating_classification = models.IntegerField(
+        choices=RatingClassification.choices,
+        help_text="Classification of the rating",
+        null=True,
+        blank=True,
     )
 
     class Meta:
@@ -149,30 +134,20 @@ class TestResults(models.Model):
             models.Index(fields=['rating_classification']),
         ]
 
+
+
     def __str__(self):
         return f"Results for {self.test_run.specimen} - Rating: {self.rating}"
 
 
 class TestMeasurements(models.Model):
     """
-    Individual measurement data points for a test result.
-    Multiple measurements per TestResults (deleted when TestResults is deleted).
+    Individual measurement data points for a test run.
     """
     test_run = models.ForeignKey(TestRun, on_delete=models.CASCADE, related_name='measurements')
-    pass_count = models.IntegerField(
-        validators=[MinValueValidator(0)],
-        help_text="Pass number for this measurement"
-    )
-    rut_depth_mm = models.FloatField(
-        validators=[MinValueValidator(0.0)],
-        help_text="Measured rut depth in millimeters"
-    )
-    ref_depth_mm = models.FloatField(
-        null=True,
-        blank=True,
-        validators=[MinValueValidator(0.0)],
-        help_text="Reference depth measurement in millimeters"
-    )
+    pass_count = models.IntegerField(validators=[MinValueValidator(0)], help_text="Pass number for this measurement")
+    rut_depth_mm = models.FloatField(validators=[MinValueValidator(0.0)], help_text="Measured rut depth in millimeters")
+    ref_depth_mm = models.FloatField(null=True, blank=True, validators=[MinValueValidator(0.0)], help_text="Reference depth measurement in millimeters")
 
     class Meta:
         db_table = 'test_measurements'
@@ -188,14 +163,10 @@ class TestMeasurements(models.Model):
 
 class TestArtifacts(models.Model):
     """
-    Files and artifacts generated during or associated with a test result.
-    Multiple artifacts per TestResults (deleted when TestResults is deleted).
+    Files and artifacts associated with a test result.
     """
     test_results = models.ForeignKey(TestResults, on_delete=models.CASCADE, related_name='artifacts')
-    type = models.CharField(
-        max_length=50,
-        help_text="Type of artifact (enum placeholder: IMAGE, VIDEO, REPORT, LOG, etc.)"
-    )
+    type = models.CharField(max_length=50, help_text="Type of artifact (IMAGE, VIDEO, REPORT, LOG, etc.)")
     path = models.CharField(max_length=500, help_text="File path or URL to the artifact")
 
     class Meta:
@@ -207,4 +178,3 @@ class TestArtifacts(models.Model):
 
     def __str__(self):
         return f"{self.type} - {self.path}"
-
