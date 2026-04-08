@@ -160,6 +160,7 @@ class AnalysisRunService:
         test_results.rut_depth_final = AnalysisRunService._rut_depth_at(df, -1, col_map)
         test_results.inflection_pass = AnalysisRunService._sip(df, col_map)
         test_results.passes_total = AnalysisRunService._passes_total(df, col_map)
+        test_results.rating = AnalysisRunService._rri(df,col_map,test_run)
 
         test_run.status = TestRunStatus.COMPLETED
         test_run.save()
@@ -253,3 +254,33 @@ class AnalysisRunService:
             return None  # test ended before reaching target passes
 
         return row[rut_col].iloc[0]
+
+    @staticmethod
+    def _rri(df, col_map,test_run):
+        passes_col = col_map['passes']
+        rut_col = 'rut_depth_smooth'
+        rri = 0
+
+        max_rut = test_run.allowed_rut_depth  # 12.5 mm
+        passes_to_rut = test_run.binder_grade.passes_to_rut  # 20000 for PG-76
+        rut_limit_inches = max_rut / 1000 * 39.3701  # 12.5 mm → inches
+
+        # Get rut depth at or nearest to the required pass count
+        mask = df[passes_col] <= passes_to_rut
+        rut_at_max = df.loc[mask, rut_col].iloc[-1]  # last value at or before max passes
+
+        # Convert to inches
+        rut_at_max_inches = rut_at_max / 1000 * 39.3701
+
+        if rut_at_max > max_rut:
+            # Specimen failed — find the pass where it first crossed 12.5 mm
+            fail_mask = df[rut_col] >= max_rut
+            passes_at_failure = df.loc[fail_mask, passes_col].iloc[0]
+            rri = passes_at_failure * rut_limit_inches
+        else:
+            # Specimen passed
+            rri = passes_to_rut * (1 - rut_at_max_inches)
+
+
+        return rri
+
